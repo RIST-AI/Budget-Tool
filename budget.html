@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Budget Simulator - RIST Budget Master</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* RIST Brand Colors */
+        :root {
+            --rist-navy: #1a3a5f;
+            --rist-blue: #0077c8;
+            --rist-light-blue: #4ca5d8;
+            --rist-green: #6cc24a;
+            --rist-light-green: #c4d600;
+        }
+        
+        header {
+            background-color: var(--rist-navy);
+            color: white;
+            padding: 20px 0;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo-container {
+            flex: 0 0 150px;
+        }
+        
+        .rist-logo {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .title-container {
+            flex: 1;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        main {
+            padding: 30px 0;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--rist-navy);
+        }
+        
+        .budget-simulator {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .budget-controls {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--rist-navy);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #0f2a4a;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .btn-remove {
+            background-color: #dc3545;
+        }
+        
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+        
+        /* RIST styled buttons */
+        #add-income {
+            background-color: var(--rist-green);
+            color: white;
+        }
+        
+        #add-income:hover {
+            background-color: #5aa83c;
+        }
+        
+        #add-expense {
+            background-color: var(--rist-blue);
+            color: white;
+        }
+        
+        #add-expense:hover {
+            background-color: #0066b0;
+        }
+        
+        .budget-workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .budget-workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .budget-section {
+            margin-bottom: 20px;
+        }
+        
+        h3 {
+            margin-bottom: 15px;
+            color: var(--rist-navy);
+        }
+        
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .budget-table th,
+        .budget-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        
+        .budget-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .budget-table tfoot {
+            font-weight: bold;
+        }
+        
+        .budget-summary {
+            grid-column: 1 / -1;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .summary-table td {
+            padding: 8px;
+        }
+        
+        .summary-table tr:last-child {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .positive {
+            color: var(--rist-green);
+        }
+        
+        .negative {
+            color: #dc3545;
+        }
+        
+        footer {
+            background-color: var(--rist-navy);
+            color: white;
+            padding: 20px 0;
+            margin-top: 30px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-logo,
+            .footer-info,
+            .footer-contact {
+                margin-bottom: 10px;
+            }
+        }
+        
+        .footer-logo {
+            flex: 0 0 50px;
+        }
+        
+        .rist-logo-footer {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .footer-info {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .footer-contact a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-contact a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="images/RIST - Primary Colour.jpg" alt="RIST - Rural Industries Skill Training" class="rist-logo">
+                </div>
+                <div class="title-container">
+                    <h1>AHCBUS408 Budget Master</h1>
+                    <p>Agricultural Budgeting Training Tool</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="page-header">
+            <h2>Budget Simulator</h2>
+            <p>Practice creating and managing farm budgets with our interactive simulator.</p>
+        </section>
+
+        <section class="budget-simulator">
+            <div class="budget-controls">
+                <div class="form-group">
+                    <label for="budget-name">Budget Name:</label>
+                    <input type="text" id="budget-name" placeholder="Enter a name for your budget">
+                </div>
+                
+                <div class="form-group">
+                    <label for="budget-period">Budget Period:</label>
+                    <select id="budget-period">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annual" selected>Annual</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="farm-type">Farm Type:</label>
+                    <select id="farm-type">
+                        <option value="dairy">Dairy Farm</option>
+                        <option value="crop">Crop Farm</option>
+                        <option value="livestock">Livestock Farm</option>
+                        <option value="mixed">Mixed Farm</option>
+                    </select>
+                </div>
+                
+                <button id="reset-budget" class="btn btn-secondary">Reset Budget</button>
+            </div>
+            
+            <div class="budget-workspace">
+                <div class="budget-section">
+                    <h3>Income</h3>
+                    <table class="budget-table" id="income-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Amount ($)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="Income item"></td>
+                                <td><input type="number" placeholder="0.00"></td>
+                                <td><button class="btn-small btn-remove">Remove</button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3">
+                                    <button id="add-income" class="btn-small">+ Add Income Item</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Income</strong></td>
+                                <td id="total-income">$0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="budget-section">
+                    <h3>Expenses</h3>
+                    <table class="budget-table" id="expense-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Amount ($)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="Expense item"></td>
+                                <td><input type="number" placeholder="0.00"></td>
+                                <td><button class="btn-small btn-remove">Remove</button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3">
+                                    <button id="add-expense" class="btn-small">+ Add Expense Item</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Expenses</strong></td>
+                                <td id="total-expenses">$0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="budget-summary">
+                    <h3>Budget Summary</h3>
+                    <table class="summary-table">
+                        <tr>
+                            <td>Total Income:</td>
+                            <td id="summary-income">$0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Total Expenses:</td>
+                            <td id="summary-expenses">$0.00</td>
+                        </tr>
+                        <tr class="net-result">
+                            <td>Net Result:</td>
+                            <td id="net-result">$0.00</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/RIST Brandmark - Navy Circle.png" alt="RIST" class="rist-logo-footer">
+                </div>
+                <div class="footer-info">
+                    <p>&copy; 2025 RIST - Rural Industries Skill Training</p>
+                    <p>AHCBUS408 Budget Master</p>
+                </div>
+                <div class="footer-contact">
+                    <p>Contact: <a href="mailto:info@rist.com.au">info@rist.com.au</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Budget simulator initialized");
+            
+            // Set up event listeners for buttons
+            document.getElementById('add-income').addEventListener('click', addIncomeItem);
+            document.getElementById('add-expense').addEventListener('click', addExpenseItem);
+            document.getElementById('reset-budget').addEventListener('click', resetBudget);
+            
+            // Set up event delegation for remove buttons
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('btn-remove')) {
+                    const row = e.target.closest('tr');
+                    if (row) {
+                        row.remove();
+                        updateTotals();
+                    }
+                }
+            });
+            
+            // Update totals when amount changes
+            document.addEventListener('input', function(e) {
+                if (e.target && e.target.type === 'number') {
+                    updateTotals();
+                }
+            });
+            
+            // Initial update of totals
+            updateTotals();
+        });
+        
+        // Add income item
+        function addIncomeItem() {
+            const incomeTable = document.querySelector('#income-table tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="Income item"></td>
+                <td><input type="number" placeholder="0.00"></td>
+                <td><button class="btn-small btn-remove">Remove</button></td>
+            `;
+            incomeTable.appendChild(newRow);
+            updateTotals();
+        }
+        
+        // Add expense item
+        function addExpenseItem() {
+            const expenseTable = document.querySelector('#expense-table tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="Expense item"></td>
+                <td><input type="number" placeholder="0.00"></td>
+                <td><button class="btn-small btn-remove">Remove</button></td>
+            `;
+            expenseTable.appendChild(newRow);
+            updateTotals();
+        }
+        
+        // Update totals
+        function updateTotals() {
+            // Calculate income total
+            let incomeTotal = 0;
+            document.querySelectorAll('#income-table tbody tr').forEach(row => {
+                const amountInput = row.querySelector('input[type="number"]');
+                if (amountInput && amountInput.value) {
+                    incomeTotal += parseFloat(amountInput.value);
+                }
+            });
+            
+            // Calculate expense total
+            let expenseTotal = 0;
+            document.querySelectorAll('#expense-table tbody tr').forEach(row => {
+                const amountInput = row.querySelector('input[type="number"]');
+                if (amountInput && amountInput.value) {
+                    expenseTotal += parseFloat(amountInput.value);
+                }
+            });
+            
+            // Calculate net result
+            const netResult = incomeTotal - expenseTotal;
+            
+            // Update display
+            document.getElementById('total-income').textContent = formatCurrency(incomeTotal);
+            document.getElementById('total-expenses').textContent = formatCurrency(expenseTotal);
+            document.getElementById('summary-income').textContent = formatCurrency(incomeTotal);
+            document.getElementById('summary-expenses').textContent = formatCurrency(expenseTotal);
+            document.getElementById('net-result').textContent = formatCurrency(netResult);
+            
+            // Add color coding for net result
+            const netResultElement = document.getElementById('net-result');
+            if (netResult > 0) {
+                netResultElement.classList.add('positive');
+                netResultElement.classList.remove('negative');
+            } else if (netResult < 0) {
+                netResultElement.classList.add('negative');
+                netResultElement.classList.remove('positive');
+            } else {
+                netResultElement.classList.remove('positive');
+                netResultElement.classList.remove('negative');
+            }
+        }
+        
+        // Reset budget
+        function resetBudget() {
+            if (confirm('Are you sure you want to reset this budget? All data will be lost.')) {
+                // Clear budget name and reset selects to defaults
+                document.getElementById('budget-name').value = '';
+                document.getElementById('budget-period').value = 'annual';
+                document.getElementById('farm-type').value = 'dairy';
+                
+                // Reset income table to one empty row
+                const incomeTable = document.querySelector('#income-table tbody');
+                incomeTable.innerHTML = `
+                    <tr>
+                        <td><input type="text" placeholder="Income item"></td>
+                        <td><input type="number" placeholder="0.00"></td>
+                        <td><button class="btn-small btn-remove">Remove</button></td>
+                    </tr>
+                `;
+                
+                // Reset expense table to one empty row
+                const expenseTable = document.querySelector('#expense-table tbody');
+                expenseTable.innerHTML = `
+                    <tr>
+                        <td><input type="text" placeholder="Expense item"></td>
+                        <td><input type="number" placeholder="0.00"></td>
+                        <td><button class="btn-small btn-remove">Remove</button></td>
+                    </tr>
+                `;
+                
+                // Update totals
+                updateTotals();
+            }
+        }
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return '$' + Number(amount).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    </script>
+</body>
+</html>
